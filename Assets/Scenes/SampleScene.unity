@@ -416,7 +416,6 @@ GameObject:
   - component: {fileID: 849432668}
   - component: {fileID: 849432673}
   - component: {fileID: 849432672}
-  - component: {fileID: 849432671}
   - component: {fileID: 849432667}
   m_Layer: 0
   m_Name: Player
@@ -440,6 +439,7 @@ MonoBehaviour:
   speed: 4
   jumpForce: 7
   jumpMultiplier: 10
+  jumpInputTime: 20
   numberOfJumps: 1
   facingRight: 1
 --- !u!23 &849432668
@@ -502,25 +502,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &849432671
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 849432666}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a28ebce78a951db469c82ddf985e70bf, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!50 &849432672
 Rigidbody2D:
   serializedVersion: 4
@@ -997,7 +978,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.05, y: 0}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -1008,7 +989,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.1, y: 0.1}
+  m_Size: {x: 0.95, y: 0.1}
   m_EdgeRadius: 0
 --- !u!1 &1774262609
 GameObject:

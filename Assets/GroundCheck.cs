@@ -6,12 +6,10 @@ using UnityEngine;
 
 public class GroundCheck : MonoBehaviour
 {
-	private Animator anim;
 	private PlayerController playerController;
 	
     void Start()
     {
-		anim = gameObject.transform.parent.gameObject.GetComponent<Animator>();
 		playerController = gameObject.transform.parent.gameObject.GetComponent<PlayerController>();
     }
 
@@ -19,13 +17,11 @@ public class GroundCheck : MonoBehaviour
 	{
 		playerController.jumpCount = 0;
 		playerController.isGrounded = true;
-		anim.SetBool("isGrounded", true);
 	}
 	
 	private void OnTriggerExit2D(Collider2D col)
 	{
 		playerController.isGrounded = false;
-		anim.SetBool("isGrounded", false);
 	}
 	
 }
