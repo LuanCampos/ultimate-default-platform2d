@@ -6,18 +6,19 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-	public float speed = 3f; 
+	public float speed = 4f; 
 	private float moveInput = 0f;
 	private Rigidbody2D rigidBody;
 	
-	public float jumpForce = 6f;
+	public float jumpForce = 7f;
 	public int jumpMultiplier = 10;
-	public int jumpInputTime = 20;
+	public int jumpInputMargin = 8;
 	public int numberOfJumps = 1;
 	internal int jumpCount = 0;
 	internal bool isGrounded = false;
 	private int jumpMultipCount = 0;
 	private int jumpInputCount = 0;
+	// private int notGroundedCount = 0;
 	private bool jumpInput = false;
 	
 	[HideInInspector] public bool facingRight = true;
@@ -33,10 +34,10 @@ public class PlayerController : MonoBehaviour
 		
 		if (Input.GetButtonDown("Jump"))
 		{
-			jumpInputCount = jumpInputTime;
+			jumpInputCount = jumpInputMargin;
 		}
 		
-		if (jumpInputCount > 0f)
+		if (jumpInputCount > 0)
 		{
 			if (isGrounded)
 			{

@@ -439,7 +439,7 @@ MonoBehaviour:
   speed: 4
   jumpForce: 7
   jumpMultiplier: 10
-  jumpInputTime: 20
+  jumpInputTime: 8
   numberOfJumps: 1
   facingRight: 1
 --- !u!23 &849432668
