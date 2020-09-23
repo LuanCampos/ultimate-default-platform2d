@@ -6,22 +6,35 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+	// movement variables
+	[Tooltip("The speed of the character")]
 	public float speed = 4f; 
+	
 	private float moveInput = 0f;
 	private Rigidbody2D rigidBody;
 	
+	// jump variables
+	[Tooltip("The force of jump of the character")]
 	public float jumpForce = 7f;
-	public int jumpMultiplier = 10;
-	public int jumpInputMargin = 8;
+	[Tooltip("How many frames the player can hold Jump Button to get a higher jump")]
+	public int jumpBoost = 10;
+	[Tooltip("How many frames before the character is grounded the player can press Jump Button and still jump")]
+	public int earlyInputMargin = 8;
+	[Tooltip("How many frames after the character was grounded the player can press Jump Button and still jump")]
+	public int coyoteTime = 5;
+	[Tooltip("How many times the character can jump after touching the ground once")]
 	public int numberOfJumps = 1;
-	internal int jumpCount = 0;
+
 	internal bool isGrounded = false;
-	private int jumpMultipCount = 0;
-	private int jumpInputCount = 0;
-	// private int notGroundedCount = 0;
-	private bool jumpInput = false;
+	internal int jumpCount = 0;
+	internal int coyoteTimeCount = 0;
 	
-	[HideInInspector] public bool facingRight = true;
+	private bool jumpInput = false;
+	private int earlyInputCount = 0;
+	private int jumpBoostCount = 0;
+	
+	[HideInInspector]
+	public bool facingRight = true;
   
 	void Start ()
 	{
@@ -30,28 +43,29 @@ public class PlayerController : MonoBehaviour
 
 	void Update ()
 	{
+		// get movement input
 		moveInput = Input.GetAxis ("Horizontal");
 		
-		if (Input.GetButtonDown("Jump"))
+		// get jump input
+		if (Input.GetButtonDown("Jump") || earlyInputCount > 0)
 		{
-			jumpInputCount = jumpInputMargin;
-		}
-		
-		if (jumpInputCount > 0)
-		{
-			if (isGrounded)
+			if (isGrounded || coyoteTimeCount > 0)
 			{
 				jumpInput = true;
-				jumpMultipCount = jumpMultiplier;
+				jumpBoostCount = jumpBoost;
 			}
 			
 			else if (jumpCount + 1 < numberOfJumps)
 			{
 				jumpInput = true;
-				jumpMultipCount = jumpMultiplier;
+				jumpBoostCount = jumpBoost;
 				jumpCount += 1;
 			}
 			
+			else if (earlyInputCount == 0)
+			{
+				earlyInputCount = earlyInputMargin;
+			}
 		}
 		
 		if (Input.GetButtonUp("Jump"))
@@ -63,6 +77,7 @@ public class PlayerController : MonoBehaviour
 	
 	void FixedUpdate()
 	{
+		// manage movement
 		if (moveInput != 0f)
 		{
 			rigidBody.velocity = new Vector2 (moveInput * speed, rigidBody.velocity.y);
@@ -73,17 +88,24 @@ public class PlayerController : MonoBehaviour
 			rigidBody.velocity = new Vector2 (0f, rigidBody.velocity.y);
 		}
 		
-		if (jumpInputCount > 0f)
-		{
-			jumpInputCount -= 1;
-		}
-		
-		if (jumpInput && jumpMultipCount > 0)
+		// manage jump
+		if (jumpInput && jumpBoostCount > 0)
 		{
 			rigidBody.velocity = new Vector2 (rigidBody.velocity.x, jumpForce);
-			jumpMultipCount -= 1;
+			jumpBoostCount -= 1;
 		}
 		
+		if (coyoteTimeCount > 0)
+		{
+			coyoteTimeCount -= 1;
+		}
+		
+		if (earlyInputCount > 0)
+		{
+			earlyInputCount -= 1;
+		}
+		
+		// manage what side the character is facing
 		if ((rigidBody.velocity.x > 0f && !facingRight) || (rigidBody.velocity.x < 0f && facingRight))
 		{
 			transform.localScale = Vector3.Scale(transform.localScale, new Vector3(-1,1,1));

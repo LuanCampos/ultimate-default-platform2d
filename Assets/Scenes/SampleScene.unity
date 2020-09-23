@@ -438,8 +438,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 4
   jumpForce: 7
-  jumpMultiplier: 10
-  jumpInputTime: 8
+  jumpBoost: 10
+  earlyInputMargin: 8
+  coyoteTime: 5
   numberOfJumps: 1
   facingRight: 1
 --- !u!23 &849432668

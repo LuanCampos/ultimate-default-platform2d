@@ -15,13 +15,15 @@ public class GroundCheck : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D col)
 	{
-		playerController.jumpCount = 0;
 		playerController.isGrounded = true;
+		playerController.jumpCount = 0;
+		playerController.coyoteTimeCount = 0;
 	}
 	
 	private void OnTriggerExit2D(Collider2D col)
 	{
 		playerController.isGrounded = false;
+		playerController.coyoteTimeCount = playerController.coyoteTime;
 	}
 	
 }
