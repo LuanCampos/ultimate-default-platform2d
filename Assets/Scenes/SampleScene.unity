@@ -130,9 +130,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 519420032}
+  - component: {fileID: 519420030}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
-  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -160,9 +160,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21a2417bdd54e7547836543773b20543, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OffSet: {x: 1.5, y: 0.5, z: -10}
-  smooth: 1
-  target: {fileID: 849432670}
+  offSet: {x: 1.5, y: 1.2, z: -1}
+  smoothness: 1
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -454,7 +453,7 @@ GameObject:
   - component: {fileID: 849432672}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -477,7 +476,6 @@ MonoBehaviour:
   earlyInputMargin: 8
   coyoteTime: 5
   numberOfJumps: 1
-  facingRight: 1
 --- !u!23 &849432668
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -974,8 +972,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1424667555}
-  - component: {fileID: 1424667557}
   - component: {fileID: 1424667556}
+  - component: {fileID: 1424667557}
   m_Layer: 0
   m_Name: GroundCheck
   m_TagString: Untagged

@@ -6,112 +6,232 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-	// movement variables
+	[Header("[Character Movement]")]
 	[Tooltip("The speed of the character")]
-	public float speed = 4f; 
-	
-	private float moveInput = 0f;
-	private Rigidbody2D rigidBody;
-	
-	// jump variables
-	[Tooltip("The force of jump of the character")]
-	public float jumpForce = 7f;
+	[SerializeField] private float speed = 4f; 
+	[Tooltip("The default jump force of the character")]
+	[SerializeField] private float jumpForce = 7f;
 	[Tooltip("How many frames the player can hold Jump Button to get a higher jump")]
-	public int jumpBoost = 10;
-	[Tooltip("How many frames before the character is grounded the player can press Jump Button and still jump")]
-	public int earlyInputMargin = 8;
-	[Tooltip("How many frames after the character was grounded the player can press Jump Button and still jump")]
-	public int coyoteTime = 5;
+	[SerializeField] private int jumpBoost = 10;
+	[Tooltip("How many frames before touch the grounded the player can press Jump Button and still jump")]
+	[SerializeField] private int earlyInputMargin = 8;
+	[Tooltip("How many frames after the character leave the grounded the player still can jump")]
+	[SerializeField] private int coyoteTime = 5;
 	[Tooltip("How many times the character can jump after touching the ground once")]
-	public int numberOfJumps = 1;
-
-	internal bool isGrounded = false;
-	internal int jumpCount = 0;
-	internal int coyoteTimeCount = 0;
+	[SerializeField] private int numberOfJumps = 1;
 	
-	private bool jumpInput = false;
-	private int earlyInputCount = 0;
-	private int jumpBoostCount = 0;
+	private bool isGrounded, facingRight, jumpInput;
+	private int earlyInputCounter, coyoteTimeCounter;
+	private int jumpCounter, jumpBoostCounter;
+	private float moveInput;
+	private Rigidbody2D rigidBody;
+	private Vector3 inverseXAxis = new Vector3(-1,1,1);
 	
-	[HideInInspector]
-	public bool facingRight = true;
-  
-	void Start ()
+	void Start()
 	{
-		rigidBody = GetComponent<Rigidbody2D> ();
+		SetVariables();
 	}
 
-	void Update ()
+	void Update()
 	{
-		// get movement input
-		moveInput = Input.GetAxis ("Horizontal");
-		
-		// get jump input
-		if (Input.GetButtonDown("Jump") || earlyInputCount > 0)
-		{
-			if (isGrounded || coyoteTimeCount > 0)
-			{
-				jumpInput = true;
-				jumpBoostCount = jumpBoost;
-			}
-			
-			else if (jumpCount + 1 < numberOfJumps)
-			{
-				jumpInput = true;
-				jumpBoostCount = jumpBoost;
-				jumpCount += 1;
-			}
-			
-			else if (earlyInputCount == 0)
-			{
-				earlyInputCount = earlyInputMargin;
-			}
-		}
-		
-		if (Input.GetButtonUp("Jump"))
-		{
-			jumpInput = false;
-		}
-		
+		GetMovementInput();
+		GetJumpInput();		
 	}
 	
 	void FixedUpdate()
 	{
-		// manage movement
-		if (moveInput != 0f)
-		{
-			rigidBody.velocity = new Vector2 (moveInput * speed, rigidBody.velocity.y);
-		}
-		
-		else if (rigidBody.velocity.x != 0f)
-		{
-			rigidBody.velocity = new Vector2 (0f, rigidBody.velocity.y);
-		}
-		
-		// manage jump
-		if (jumpInput && jumpBoostCount > 0)
-		{
-			rigidBody.velocity = new Vector2 (rigidBody.velocity.x, jumpForce);
-			jumpBoostCount -= 1;
-		}
-		
-		if (coyoteTimeCount > 0)
-		{
-			coyoteTimeCount -= 1;
-		}
-		
-		if (earlyInputCount > 0)
-		{
-			earlyInputCount -= 1;
-		}
-		
-		// manage what side the character is facing
-		if ((rigidBody.velocity.x > 0f && !facingRight) || (rigidBody.velocity.x < 0f && facingRight))
-		{
-			transform.localScale = Vector3.Scale(transform.localScale, new Vector3(-1,1,1));
-			facingRight = !facingRight;
-		}
-	
+		Move();
+		Jump();
+		FaceTheGoingSide();
 	}
 	
+	public bool IsPlayerFacingRight()
+	{
+		return facingRight;
+	}
+	
+	public void TouchTheGround()
+	{
+		isGrounded = true;
+		jumpCounter = 0;
+		coyoteTimeCounter = 0;
+	}
+	
+	public void LeaveTheGround()
+	{
+		isGrounded = false;
+		coyoteTimeCounter = coyoteTime;
+	}
+	
+	private void SetVariables()
+	{
+		rigidBody = GetComponent<Rigidbody2D>();
+		facingRight = true;
+	}
+	
+	private void GetMovementInput()
+	{
+		moveInput = Input.GetAxis("Horizontal");
+	}
+	
+	private void GetJumpInput()
+	{
+		GetJumpInputPress();
+		GetJumpInputRelease();
+	}
+	
+	private void GetJumpInputPress()
+	{
+		if (HasJumpInput())
+		{
+			TriggerCurrentJumpInput();
+		}
+	}
+	
+	private bool HasJumpInput()
+	{
+		return Input.GetButtonDown("Jump") || earlyInputCounter > 0;
+	}
+	
+	private void TriggerCurrentJumpInput()
+	{
+		if (IsConsideredGrounded())
+			TriggerJump();
+		
+		else if (HasMoreJumpsToUse())
+		{
+			TriggerJump();
+			UpdateJumpCount();
+		}
+		
+		else if (EarlyInputNotTrigger())
+			TriggerEarlyInput();
+	}
+	
+	private bool IsConsideredGrounded()
+	{
+		return isGrounded || coyoteTimeCounter > 0;
+	}
+	
+	private void TriggerJump()
+	{
+		jumpInput = true;
+		jumpBoostCounter = jumpBoost;
+	}
+	
+	private bool HasMoreJumpsToUse()
+	{
+		return jumpCounter + 1 < numberOfJumps;
+	}
+	
+	private void UpdateJumpCount()
+	{
+		jumpCounter += 1;
+	}
+	
+	private bool EarlyInputNotTrigger()
+	{
+		return earlyInputCounter == 0;
+	}
+	
+	private void TriggerEarlyInput()
+	{
+		earlyInputCounter = earlyInputMargin;
+	}
+	
+	private void GetJumpInputRelease()
+	{
+		if (Input.GetButtonUp("Jump"))
+			jumpInput = false;
+	}
+	
+	private void Move()
+	{
+		if (HasMovementInput())
+			UpdateMovementVelocity();
+		
+		else if (HasMovementVelocity())
+			StopMovementVelocity();
+	}
+	
+	private bool HasMovementInput()
+	{
+		return moveInput != 0f;
+	}
+	
+	private void UpdateMovementVelocity()
+	{
+		rigidBody.velocity = new Vector2 (moveInput * speed, rigidBody.velocity.y);
+	}
+	
+	private bool HasMovementVelocity()
+	{
+		return rigidBody.velocity.x != 0f;
+	}
+	
+	private void StopMovementVelocity()
+	{
+		rigidBody.velocity = new Vector2 (0f, rigidBody.velocity.y);
+	}
+	
+	private void Jump()
+	{
+		if (jumpInput && HasJumpBoost())
+		{
+			IncreaseJumpVelocity();
+			UpdateJumpBoostCount();
+		}
+		
+		UpdateCoyoteTimeCount();
+		UpdateEarlyInputCount();
+	}
+	
+	private bool HasJumpBoost()
+	{
+		return jumpBoostCounter > 0;
+	}
+	
+	private void IncreaseJumpVelocity()
+	{
+		rigidBody.velocity = new Vector2 (rigidBody.velocity.x, jumpForce);
+	}
+	
+	private void UpdateJumpBoostCount()
+	{
+		jumpBoostCounter -= 1;
+	}
+	
+	private void UpdateCoyoteTimeCount()
+	{
+		if (coyoteTimeCounter > 0)
+			coyoteTimeCounter -= 1;
+	}
+	
+	private void UpdateEarlyInputCount()
+	{
+		if (earlyInputCounter > 0)
+			earlyInputCounter -= 1;
+	}	
+	
+	private void FaceTheGoingSide()
+	{
+		if ((GoingRight() && !facingRight) || (GoingLeft() && facingRight))
+			ChangeTheFacingSide();
+	}
+	
+	private bool GoingRight()
+	{
+		return rigidBody.velocity.x > 0f;
+	}
+	
+	private bool GoingLeft()
+	{
+		return rigidBody.velocity.x < 0f;
+	}
+	
+	private void ChangeTheFacingSide()
+	{
+		transform.localScale = Vector3.Scale(transform.localScale, inverseXAxis);
+		facingRight = !facingRight;
+	}
 }

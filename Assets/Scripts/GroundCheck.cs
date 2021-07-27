@@ -10,20 +10,22 @@ public class GroundCheck : MonoBehaviour
 	
     void Start()
     {
-		playerController = gameObject.transform.parent.gameObject.GetComponent<PlayerController>();
+		SetVariables();
     }
+	
+	private void SetVariables()
+	{
+		playerController = gameObject.transform.parent.gameObject.GetComponent<PlayerController>();
+	}
 
     private void OnTriggerEnter2D(Collider2D col)
 	{
-		playerController.isGrounded = true;
-		playerController.jumpCount = 0;
-		playerController.coyoteTimeCount = 0;
+		playerController.TouchTheGround();
 	}
 	
 	private void OnTriggerExit2D(Collider2D col)
 	{
-		playerController.isGrounded = false;
-		playerController.coyoteTimeCount = playerController.coyoteTime;
+		playerController.LeaveTheGround();
 	}
 	
 }
