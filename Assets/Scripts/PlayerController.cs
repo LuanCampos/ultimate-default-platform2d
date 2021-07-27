@@ -101,7 +101,7 @@ public class PlayerController : MonoBehaviour
 		else if (HasMoreJumpsToUse())
 		{
 			TriggerJump();
-			UpdateJumpCount();
+			IncreaseJumpCount();
 		}
 		
 		else if (EarlyInputNotTrigger())
@@ -124,7 +124,7 @@ public class PlayerController : MonoBehaviour
 		return jumpCounter + 1 < numberOfJumps;
 	}
 	
-	private void UpdateJumpCount()
+	private void IncreaseJumpCount()
 	{
 		jumpCounter += 1;
 	}
