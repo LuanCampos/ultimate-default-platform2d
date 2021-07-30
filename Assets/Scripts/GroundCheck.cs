@@ -15,7 +15,7 @@ public class GroundCheck : MonoBehaviour
 	
 	private void SetVariables()
 	{
-		playerController = gameObject.transform.parent.gameObject.GetComponent<PlayerController>();
+		playerController = transform.parent.gameObject.GetComponent<PlayerController>();
 	}
 
     private void OnTriggerEnter2D(Collider2D col)
@@ -27,5 +27,4 @@ public class GroundCheck : MonoBehaviour
 	{
 		playerController.LeaveTheGround();
 	}
-	
 }

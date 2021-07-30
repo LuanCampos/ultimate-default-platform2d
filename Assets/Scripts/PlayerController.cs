@@ -6,10 +6,12 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-	[Header("[Character Movement]")]
-	[Tooltip("The speed of the character")]
-	[SerializeField] private float speed = 4f; 
-	[Tooltip("The default jump force of the character")]
+	[Header("Character Movement:")]
+	[Tooltip("The speed of the character movement")]
+	[SerializeField] private float speed = 4f;
+	
+	[Header("Character Jump:")]
+	[Tooltip("The default force of the character jump")]
 	[SerializeField] private float jumpForce = 7f;
 	[Tooltip("How many frames the player can hold Jump Button to get a higher jump")]
 	[SerializeField] private int jumpBoost = 10;
@@ -83,9 +85,7 @@ public class PlayerController : MonoBehaviour
 	private void GetJumpInputPress()
 	{
 		if (HasJumpInput())
-		{
 			TriggerJumpInput();
-		}
 	}
 	
 	private bool HasJumpInput()
