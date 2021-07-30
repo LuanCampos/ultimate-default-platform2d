@@ -84,7 +84,7 @@ public class PlayerController : MonoBehaviour
 	{
 		if (HasJumpInput())
 		{
-			TriggerCurrentJumpInput();
+			TriggerJumpInput();
 		}
 	}
 	
@@ -93,19 +93,18 @@ public class PlayerController : MonoBehaviour
 		return Input.GetButtonDown("Jump") || earlyInputCounter > 0;
 	}
 	
-	private void TriggerCurrentJumpInput()
+	private void TriggerJumpInput()
 	{
-		if (IsConsideredGrounded())
+		if (CanJumpThisFrame())
 			TriggerJump();
 		
-		else if (HasMoreJumpsToUse())
-		{
-			TriggerJump();
-			IncreaseJumpCount();
-		}
-		
-		else if (EarlyInputNotTrigger())
+		else if (EarlyInputNotTriggerYet())
 			TriggerEarlyInput();
+	}
+	
+	private bool CanJumpThisFrame()
+	{
+		return IsConsideredGrounded() || HasMoreJumpsToUse();
 	}
 	
 	private bool IsConsideredGrounded()
@@ -113,15 +112,18 @@ public class PlayerController : MonoBehaviour
 		return isGrounded || coyoteTimeCounter > 0;
 	}
 	
+	private bool HasMoreJumpsToUse()
+	{
+		return jumpCounter + 1 < numberOfJumps;
+	}
+	
 	private void TriggerJump()
 	{
 		jumpInput = true;
 		jumpBoostCounter = jumpBoost;
-	}
-	
-	private bool HasMoreJumpsToUse()
-	{
-		return jumpCounter + 1 < numberOfJumps;
+		
+		if (!IsConsideredGrounded())
+			IncreaseJumpCount();
 	}
 	
 	private void IncreaseJumpCount()
@@ -129,7 +131,7 @@ public class PlayerController : MonoBehaviour
 		jumpCounter += 1;
 	}
 	
-	private bool EarlyInputNotTrigger()
+	private bool EarlyInputNotTriggerYet()
 	{
 		return earlyInputCounter == 0;
 	}
@@ -215,18 +217,18 @@ public class PlayerController : MonoBehaviour
 	
 	private void FaceTheGoingSide()
 	{
-		if ((GoingRight() && !facingRight) || (GoingLeft() && facingRight))
+		if ((GoingLeft() && facingRight) || (GoingRight() && !facingRight))
 			ChangeTheFacingSide();
-	}
-	
-	private bool GoingRight()
-	{
-		return rigidBody.velocity.x > 0f;
 	}
 	
 	private bool GoingLeft()
 	{
 		return rigidBody.velocity.x < 0f;
+	}
+	
+	private bool GoingRight()
+	{
+		return rigidBody.velocity.x > 0f;
 	}
 	
 	private void ChangeTheFacingSide()
