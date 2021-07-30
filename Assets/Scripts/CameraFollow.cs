@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-	[Header("[Camera Movement]")]	
+	[Header("Camera Movement:")]	
 	[Tooltip("Character framing in relation to the screen center when facing right")]
-	[SerializeField] private Vector3 offSet;
+	[SerializeField] private Vector3 offset;
 	[Tooltip("Less that 1 to smoother movements, more than 1 to faster movements")]
 	[SerializeField] private float smoothness = 1f;
 	
@@ -21,7 +21,7 @@ public class CameraFollow : MonoBehaviour
 
     void LateUpdate()
     {
-		FollowThePlayer(OffsetToPlayerFacingSide());
+		FollowThePlayer(offsetToPlayerFacingSide());
     }
 	
 	private void SetVariables()
@@ -32,22 +32,22 @@ public class CameraFollow : MonoBehaviour
 	
 	private void SetInitialPositioning()
 	{
-		transform.position = player.position + offSet;
+		transform.position = player.position + offset;
 	}
 	
-	private void FollowThePlayer(Vector3 currentOffset)
+	private void FollowThePlayer(Vector3 currentoffset)
 	{
-		transform.position = Vector3.Lerp(transform.position, PlayerPosition2D() + currentOffset, smoothness * Time.deltaTime);
+		transform.position = Vector3.Lerp(transform.position, PlayerPosition2D() + currentoffset, smoothness * Time.deltaTime);
 	}
 	
-	private Vector3 OffsetToPlayerFacingSide()
+	private Vector3 offsetToPlayerFacingSide()
 	{
-		return playerController.IsPlayerFacingRight() ? offSet : OffsetFacingLeft();
+		return playerController.IsPlayerFacingRight() ? offset : offsetFacingLeft();
 	}
 	
-	private Vector3 OffsetFacingLeft()
+	private Vector3 offsetFacingLeft()
 	{
-		return new Vector3(-offSet.x, offSet.y, offSet.z);
+		return new Vector3(-offset.x, offset.y, offset.z);
 	}
 	
 	private Vector3 PlayerPosition2D()
